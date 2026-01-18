@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="RLG Engine - Retrieval-Locked Generation for grounded Q&A with near-zero hallucination">
+    <title>RLG Engine | Grounded Intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 6v6l4 2"/>
+                        </svg>
+                    </div>
+                    <span class="logo-text">RLG Engine</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M15 18l-6-6 6-6"/>
+                    </svg>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-section="chat">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                    <span>Ask Questions</span>
+                </a>
+                <a href="#" class="nav-item" data-section="documents">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <path d="M14 2v6h6"/>
+                        <path d="M16 13H8"/>
+                        <path d="M16 17H8"/>
+                        <path d="M10 9H8"/>
+                    </svg>
+                    <span>Documents</span>
+                </a>
+                <a href="#" class="nav-item" data-section="analytics">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 20V10"/>
+                        <path d="M12 20V4"/>
+                        <path d="M6 20v-6"/>
+                    </svg>
+                    <span>Analytics</span>
+                </a>
+                <a href="#" class="nav-item" data-section="settings">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                    </svg>
+                    <span>Settings</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="status-indicator" id="statusIndicator">
+                    <div class="status-dot offline"></div>
+                    <span>Checking connection...</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Chat Section -->
+            <section class="content-section active" id="chatSection">
+                <div class="section-header">
+                    <div class="section-title">
+                        <h1>Ask Your Documents</h1>
+                        <p class="subtitle">Get grounded answers with verifiable citations</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-ghost" id="clearChatBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 6h18"/>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>
+                                <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                            </svg>
+                            <span>Clear Chat</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="chat-container" id="chatContainer">
+                    <div class="chat-messages" id="chatMessages">
+                        <!-- Welcome Message -->
+                        <div class="message system-message">
+                            <div class="message-content">
+                                <div class="welcome-card">
+                                    <div class="welcome-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                                            <path d="M2 17l10 5 10-5"/>
+                                            <path d="M2 12l10 5 10-5"/>
+                                        </svg>
+                                    </div>
+                                    <h2>Welcome to RLG Engine</h2>
+                                    <p>Ask questions about your uploaded documents. Every answer comes with verified citations and a grounding score.</p>
+                                    <div class="feature-pills">
+                                        <span class="pill">🎯 Near-Zero Hallucination</span>
+                                        <span class="pill">📄 Source Citations</span>
+                                        <span class="pill">🔒 100% Offline</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chat-input-area">
+                        <div class="input-options">
+                            <label class="toggle-option">
+                                <input type="checkbox" id="requireGrounding" checked>
+                                <span class="toggle-label">Require Grounding</span>
+                            </label>
+                            <label class="toggle-option">
+                                <input type="checkbox" id="extractiveMode">
+                                <span class="toggle-label">Extractive Mode</span>
+                            </label>
+                        </div>
+                        <div class="input-wrapper">
+                            <textarea 
+                                id="questionInput" 
+                                placeholder="Ask a question about your documents..."
+                                rows="1"
+                            ></textarea>
+                            <button class="send-btn" id="sendBtn" aria-label="Send message">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 2L11 13"/>
+                                    <path d="M22 2l-7 20-4-9-9-4 20-7z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Documents Section -->
+            <section class="content-section" id="documentsSection">
+                <div class="section-header">
+                    <div class="section-title">
+                        <h1>Knowledge Base</h1>
+                        <p class="subtitle">Manage your document collection</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-primary" id="uploadBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="17 8 12 3 7 8"/>
+                                <line x1="12" y1="3" x2="12" y2="15"/>
+                            </svg>
+                            <span>Upload Document</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Upload Modal -->
+                <div class="modal" id="uploadModal">
+                    <div class="modal-overlay"></div>
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2>Upload Document</h2>
+                            <button class="modal-close" id="closeUploadModal" aria-label="Close modal">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M18 6L6 18"/>
+                                    <path d="M6 6l12 12"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="upload-zone" id="uploadZone">
+                                <input type="file" id="fileInput" accept=".pdf,.docx,.doc,.txt,.html,.htm,.md,.xlsx,.xls,.png,.jpg,.jpeg" hidden>
+                                <div class="upload-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                        <polyline points="17 8 12 3 7 8"/>
+                                        <line x1="12" y1="3" x2="12" y2="15"/>
+                                    </svg>
+                                </div>
+                                <p class="upload-text">Drag & drop or click to upload</p>
+                                <p class="upload-hint">PDF, DOCX, TXT, HTML, Markdown, Excel, or Images</p>
+                            </div>
+                            <div class="upload-form" id="uploadForm" style="display: none;">
+                                <div class="selected-file" id="selectedFile"></div>
+                                <div class="form-group">
+                                    <label for="docTitle">Title (optional)</label>
+                                    <input type="text" id="docTitle" placeholder="Document title">
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="docCategory">Category</label>
+                                        <input type="text" id="docCategory" placeholder="e.g., Technical">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="docReliability">Reliability</label>
+                                        <input type="range" id="docReliability" min="0" max="1" step="0.1" value="1">
+                                        <span class="range-value" id="reliabilityValue">100%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-ghost" id="cancelUpload">Cancel</button>
+                            <button class="btn btn-primary" id="confirmUpload" disabled>Upload</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="documents-grid" id="documentsGrid">
+                    <div class="empty-state" id="emptyDocuments">
+                        <div class="empty-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <path d="M14 2v6h6"/>
+                            </svg>
+                        </div>
+                        <h3>No documents yet</h3>
+                        <p>Upload your first document to start asking questions</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Analytics Section -->
+            <section class="content-section" id="analyticsSection">
+                <div class="section-header">
+                    <div class="section-title">
+                        <h1>Analytics</h1>
+                        <p class="subtitle">Query performance and grounding metrics</p>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon queries">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"/>
+                                <path d="M21 21l-4.35-4.35"/>
+                            </svg>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-value" id="totalQueries">0</span>
+                            <span class="stat-label">Total Queries</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon grounding">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                <polyline points="22 4 12 14.01 9 11.01"/>
+                            </svg>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-value" id="groundingRate">0%</span>
+                            <span class="stat-label">Grounding Rate</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon documents">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <path d="M14 2v6h6"/>
+                            </svg>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-value" id="totalDocuments">0</span>
+                            <span class="stat-label">Documents</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon avg-score">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                            </svg>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-value" id="avgGrounding">0%</span>
+                            <span class="stat-label">Avg Grounding Score</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="analytics-placeholder">
+                    <div class="empty-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M18 20V10"/>
+                            <path d="M12 20V4"/>
+                            <path d="M6 20v-6"/>
+                        </svg>
+                    </div>
+                    <h3>Analytics Dashboard</h3>
+                    <p>Charts and detailed metrics will appear here after you start asking questions</p>
+                </div>
+            </section>
+
+            <!-- Settings Section -->
+            <section class="content-section" id="settingsSection">
+                <div class="section-header">
+                    <div class="section-title">
+                        <h1>Settings</h1>
+                        <p class="subtitle">Configure RLG Engine</p>
+                    </div>
+                </div>
+
+                <div class="settings-container">
+                    <div class="settings-group">
+                        <h3>Server Connection</h3>
+                        <div class="form-group">
+                            <label for="apiUrl">API URL</label>
+                            <input type="text" id="apiUrl" value="http://localhost:8000" placeholder="http://localhost:8000">
+                        </div>
+                        <button class="btn btn-primary" id="testConnectionBtn">Test Connection</button>
+                    </div>
+
+                    <div class="settings-group">
+                        <h3>Query Settings</h3>
+                        <div class="form-group">
+                            <label for="topK">Top-K Results</label>
+                            <input type="range" id="topK" min="1" max="20" value="5">
+                            <span class="range-value" id="topKValue">5</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="minReliability">Minimum Reliability</label>
+                            <input type="range" id="minReliability" min="0" max="1" step="0.1" value="0.5">
+                            <span class="range-value" id="minReliabilityValue">50%</span>
+                        </div>
+                    </div>
+
+                    <div class="settings-group">
+                        <h3>Display</h3>
+                        <label class="toggle-option full-width">
+                            <input type="checkbox" id="darkMode" checked>
+                            <span class="toggle-label">Dark Mode</span>
+                        </label>
+                        <label class="toggle-option full-width">
+                            <input type="checkbox" id="showConfidence" checked>
+                            <span class="toggle-label">Show Confidence Scores</span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
